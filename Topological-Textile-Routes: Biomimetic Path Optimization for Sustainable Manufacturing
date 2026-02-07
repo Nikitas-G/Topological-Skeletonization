@@ -1,0 +1,54 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+from skimage.morphology import skeletonize
+from skimage import filters
+from scipy.spatial import Delaunay
+from scipy import ndimage
+
+# 1. Image Loading and Pre-processing
+# Load the 'Roots' biological reference and convert to grayscale
+img = Image.open('Roots.jpg').convert('L')
+data = np.array(img)
+
+# Binarization using Otsu's method
+# Dark veins are identified as the foreground (True)
+thresh = filters.threshold_otsu(data)
+binary = data < thresh
+
+# 2. Skeletonization and Node Extraction
+# Reduce the venation pattern to a 1-pixel wide structural backbone
+skeleton = skeletonize(binary)
+
+def extract_nodes(skel):
+    # Use a 3x3 kernel to count adjacent pixels
+    # Center pixel = 10, neighbors = 1
+    kernel = np.array([[1, 1, 1], [1, 10, 1], [1, 1, 1]])
+    neighbor_count = ndimage.convolve(skel.astype(int), kernel, mode='constant', cval=0)
+    
+    # Identify Junctions (branching points, >= 13) and Endpoints (11)
+    junctions = np.argwhere(neighbor_count >= 13)
+    endpoints = np.argwhere(neighbor_count == 11)
+    return np.vstack([junctions, endpoints])
+
+nodes = extract_nodes(skeleton)
+points = nodes[:, [1, 0]] # Convert coordinates to (x, y) format
+
+# 3. Generating the 'Routes' (Delaunay Mesh)
+# This creates a geometric scaffold linking the extracted structural nodes
+tri = Delaunay(points)
+
+# 4. Visualization of Design Synthesis
+plt.figure(figsize=(12, 12))
+# Original biological 'Root' as a semi-transparent background
+plt.imshow(data, cmap='gray', alpha=0.3) 
+
+# Plotting the generated textile network (The Route)
+plt.triplot(points[:, 0], points[:, 1], tri.simplices, color='blue', linewidth=1, alpha=0.6)
+# Highlighting the structural nodes
+plt.scatter(points[:, 0], points[:, 1], c='red', s=40, edgecolors='white', zorder=5, label='Structural Junctions')
+
+plt.title("Design Synthesis: Generated Textile Route from Biological Roots", fontsize=16)
+plt.legend(loc='upper right')
+plt.axis('off')
+plt.show()
