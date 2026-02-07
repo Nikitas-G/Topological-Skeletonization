@@ -1,0 +1,53 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+from skimage.morphology import skeletonize
+from skimage import filters
+from scipy import ndimage
+
+# 1. Image Loading and Pre-processing
+# Load the 'Roots' image and convert it to grayscale
+img = Image.open('Roots.jpg').convert('L')
+data = np.array(img)
+
+# Binarization using Otsu's thresholding
+# The veins (dark areas) are identified as the 'foreground' object
+threshold_value = filters.threshold_otsu(data)
+binary_mask = data < threshold_value
+
+# 2. Skeletonization
+# This extracts the core structural backbone (1-pixel width) of the 'Roots'
+topological_skeleton = skeletonize(binary_mask)
+
+# 3. Topological Node Extraction (Junctions & Endpoints)
+# We use a 3x3 convolution kernel to count the neighbors of each pixel
+def extract_topological_nodes(skel):
+    # Kernel logic: center pixel = 10, neighbors = 1
+    kernel = np.array([[1, 1, 1],
+                       [1, 10, 1],
+                       [1, 1, 1]])
+    neighbor_count = ndimage.convolve(skel.astype(int), kernel, mode='constant', cval=0)
+    
+    # Value 11 indicates an Endpoint (1 neighbor)
+    # Value 13 or higher indicates a Junction (3 or more neighbors)
+    junctions = np.argwhere(neighbor_count >= 13)
+    endpoints = np.argwhere(neighbor_count == 11)
+    return junctions, endpoints
+
+junctions, endpoints = extract_topological_nodes(topological_skeleton)
+
+# 4. Visualization of the Design 'Routes'
+plt.figure(figsize=(12, 12))
+# Original image as a semi-transparent background
+plt.imshow(data, cmap='gray', alpha=0.5) 
+# Overlay the extracted skeleton
+plt.imshow(np.ma.masked_where(topological_skeleton == 0, topological_skeleton), cmap='cool', alpha=0.8) 
+
+# Scatter plot for structural nodes (Routes)
+plt.scatter(junctions[:, 1], junctions[:, 0], c='red', s=60, edgecolors='white', label='Structural Junctions')
+plt.scatter(endpoints[:, 1], endpoints[:, 0], c='blue', s=40, label='Endpoints')
+
+plt.title("Topological Extraction: From Biological Roots to Design Routes", fontsize=15)
+plt.legend(loc='upper right')
+plt.axis('off')
+plt.show()
