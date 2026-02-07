@@ -1,30 +1,30 @@
-# Biomimetic Design Thinking: Roots to Routes
+Topological Skeletonization for Biomimetic Textile Design
 
-This repository contains the computational framework for extracting structural patterns from natural venation systems to inform sustainable textile design. This project is part of the research submitted to the *Cumulus Athens 2026 Conference*.
+## Research Context
+This repository contains the computational framework developed for the paper **"Roots to Routes: Integrating Biomimetic Reasoning in Design Thinking"**, submitted to the **Cumulus Athens 2026 Conference**. 
 
-## Overview
-The core objective is to integrate *Biomimicry* into the *Design Thinking* process. By using topological skeletonization, we translate biological "Roots" (venation patterns) into parametric "Routes" (design scaffolds). This method prioritizes material efficiency and structural integrity at the earliest stages of the design process.
+The study explores the transition from biological structural analysis (Roots) to parametric design output (Routes) through the lens of material efficiency and zero-waste manufacturing.
 
-Key Features
-* Skeletonization: Extracts the 1-pixel structural core of organic patterns.
-* Topological Analysis: Automatically identifies junctions (branching points) and endpoints.
-* Structural Scaffolding: Provides a digital map for sustainable material distribution.
+## Abstract
+This project operationalizes a biomimetic design methodology by extracting topological data from natural venation systems. Using skeletonization algorithms and neighborhood-count convolutions, the framework identifies critical structural nodes. These data points are subsequently utilized to generate geometric scaffolds suitable for additive manufacturing, specifically targeting 3D knitting path optimization.
 
-Technical Requirements
-* Python 3.x
-* NumPy
-* Matplotlib
-* Scikit-image
-* SciPy
-* Pillow (PIL)
+## Core Methodology
+The framework is structured into four distinct computational phases:
 
-Usage
-1. Upload your biological reference image (e.g., `Roots.jpg`).
-2. Run the extraction script to generate the topological map.
-3. The script will output a visualization highlighting *Structural Junctions* (red) and *Endpoints* (blue).
+1.  **Image Processing**: Grayscale conversion and Otsu thresholding of biological references.
+2.  **Topological Skeletonization**: Morphological reduction of organic forms to a 1-pixel structural backbone using the scikit-image library.
+3.  **Feature Extraction**: Identification of structural junctions and terminals via 3x3 convolution kernels.
+4.  **Geometric Synthesis**: Generation of a Delaunay triangulation mesh to facilitate variable density material distribution.
 
-Research Context
-This work positions biomimetic reasoning as a practical means of embedding sustainability within the design process itself, rather than treating it as an external corrective concern.
+## Technical Specifications and Dependencies
+The implementation is written in Python The following scientific libraries are required:
 
-License
-MIT License
+* **NumPy**: Array manipulation and numerical analysis.
+* **SciPy**: Spatial algorithms and convolution operations.
+* **Scikit-image**: Morphological skeletonization and image filtering.
+* **Matplotlib**: Technical visualization and data plotting.
+* **Pillow (PIL)**: Image I/O operations.
+
+Installation of requirements:
+```bash
+pip install numpy scipy scikit-image matplotlib pillow
