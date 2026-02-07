@@ -25,6 +25,3 @@ The implementation is written in Python The following scientific libraries are r
 * **Matplotlib**: Technical visualization and data plotting.
 * **Pillow (PIL)**: Image I/O operations.
 
-Installation of requirements:
-```bash
-pip install numpy scipy scikit-image matplotlib pillow
